@@ -35,6 +35,7 @@ db = DB()
 class User:
     chat_id: int
     day_number: int = 1
+    is_waiting_next_day: bool = False
     state: str = None
 
     @staticmethod

@@ -118,13 +118,15 @@ async def ok_day_1_step_10(call: types.CallbackQuery):
 
 
 @settings.dp.callback_query_handler(callbacks.ok_data().filter(day='1', step='11'))
-async def ok_day_1_step_11(call: types.CallbackQuery):
+async def ok_day_1_step_11(call: types.CallbackQuery, user: User):
     await answer_file(
         message=call.message,
         file_key='day_1_step_11',
         caption="Ты молодец, что сделал шаг вперед - пока ничего сложного, правда же? За это я как и обещала, присылаю "
         "тебе гайд и на сегодня мы отдыхаем, до новых встреч завтра!",
     )
+    user.is_waiting_next_day = True
+    user.save()
 
 
 @settings.dp.callback_query_handler(callbacks.ok_data().filter(day='2', step='4'))
@@ -193,6 +195,8 @@ async def enter_three_things(message: types.Message, user: User, state: FSMConte
                          "такое же заряженное окружение: https://t.me/+bAXZl02t3aAwODA6   💗 а все мы знаем, как "
                          "важна поддержка на этом пути, так что жду тебя, мой дорогой шпион! Ну и жду тебя завтра, "
                          "в этом же месте, в это же время!")
+    user.is_waiting_next_day = True
+    user.save()
 
 
 @settings.dp.callback_query_handler(callbacks.yes_no_data().filter(action='yes', day='3', step='6'))

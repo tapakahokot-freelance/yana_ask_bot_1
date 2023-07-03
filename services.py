@@ -54,7 +54,7 @@ async def run_schedule():
 
 async def day_2_hi_message():
     for user in User.get_all():
-        if user.day_number == 1:
+        if user.day_number == 1 and user.is_waiting_next_day:
             await settings.bot.send_message(
                 chat_id=user.chat_id,
                 text="Привет-привет, будущий студент зарубежного университета! Как твои дела? "
@@ -64,7 +64,7 @@ async def day_2_hi_message():
 
 async def day_2_lesson_message():
     for user in User.get_all():
-        if user.day_number == 1:
+        if user.day_number == 1 and user.is_waiting_next_day:
             await settings.bot.send_message(
                 chat_id=user.chat_id,
                 text="А вот уже готовый второй урок на очереди."
@@ -80,13 +80,14 @@ async def day_2_lesson_message():
 
 async def day_2_ask_message():
     for user in User.get_all():
-        if user.day_number == 1:
+        if user.day_number == 1 and user.is_waiting_next_day:
             await settings.bot.send_message(
                 chat_id=user.chat_id,
                 text="Ну как? Удалось посмотреть мое видео? Точно смотрел внимательно?",
                 reply_markup=callbacks.ok_kb(day=2, step=4)
             )
             user.day_number = 2
+            user.is_waiting_next_day = False
             user.save()
 
 
@@ -101,7 +102,7 @@ async def day_2_remember_about_inside():
 
 async def day_3_hi_message():
     for user in User.get_all():
-        if user.day_number == 2 and user.state is None:
+        if user.day_number == 2 and user.state is None and user.is_waiting_next_day:
             await settings.bot.send_message(
                 chat_id=user.chat_id,
                 text="Ну что, я посмотрела твое домашнее задание! Ты действительно усвоил материал, но, конечно, "
@@ -118,7 +119,7 @@ async def day_3_hi_message():
 
 async def day_3_hi_message_2():
     for user in User.get_all():
-        if user.day_number == 2 and user.state is None:
+        if user.day_number == 2 and user.state is None and user.is_waiting_next_day:
             await settings.bot.send_message(
                 chat_id=user.chat_id,
                 text="Во-вторых, сделай упор на свой личный бренд. Тут хорошо бы иметь не только академический "
@@ -129,7 +130,7 @@ async def day_3_hi_message_2():
 
 async def day_3_hi_message_3():
     for user in User.get_all():
-        if user.day_number == 2 and user.state is None:
+        if user.day_number == 2 and user.state is None and user.is_waiting_next_day:
             await settings.bot.send_message(
                 chat_id=user.chat_id,
                 text="Если ты заинтересовался и хочешь действительно углубится в этот процесс и осуществить свою "
@@ -137,3 +138,5 @@ async def day_3_hi_message_3():
                      "шансы и рассказать подробнее про наши услуги! ну как, интересно ли тебе предложение, напарник?",
                 reply_markup=callbacks.yes_no_kb(day=3, step=6)
             )
+            user.is_waiting_next_day = False
+            user.save()
