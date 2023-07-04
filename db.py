@@ -2,11 +2,13 @@ import json
 import os
 from dataclasses import dataclass
 
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
 
 @dataclass
 class DB:
     users: dict[str: 'User'] = None
-    users_file: str = 'users.json'
+    users_file: str = base_dir + '/users.json'
 
     def load_data(self, json_file):
         if os.path.exists(json_file):
