@@ -71,3 +71,6 @@ class Settings:
 
 
 settings = Settings()
+
+import sentry_sdk
+sentry_sdk.init(settings.sentry_dsn)
