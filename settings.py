@@ -14,7 +14,7 @@ base_dir = path.dirname(path.abspath(__file__))
 files_dir = base_dir + '/files'
 
 try:
-    mkdir("logs")
+    mkdir(base_dir + "/logs")
 except FileExistsError:
     pass
 
@@ -45,6 +45,8 @@ class Settings:
 
         self.bot = Bot(token=self.token)
         self.dp = Dispatcher(self.bot, storage=JSONStorage(pathlib.Path(base_dir + '/storage.json')))
+
+        logger.info(f'storage path: {pathlib.Path(base_dir + "/storage.json")}')
 
         self.files = {
             'day_1_step_2': {
