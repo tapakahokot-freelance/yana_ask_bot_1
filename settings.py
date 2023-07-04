@@ -51,27 +51,43 @@ class Settings:
         self.files = {
             'day_1_step_2': {
                 'id': None,
+                'filename': None,
                 'path': files_dir + '/day_1_step_2.jpg'
             },
             'day_1_step_3': {
                 'id': None,
+                'filename': None,
                 'path': files_dir + '/day_1_step_3.jpg'
             },
             'day_1_step_4': {
                 'id': None,
+                'filename': None,
                 'path': files_dir + '/day_1_step_4.jpg'
             },
             'day_1_step_5': {
                 'id': None,
+                'filename': None,
                 'path': files_dir + '/day_1_step_5.jpg'
             },
             'day_1_step_11': {
                 'id': None,
+                'filename': '8 шагов к поступлению за границу.pdf',
                 'path': files_dir + '/day_1_step_11.pdf'
             },
             'day_2_step_8': {
                 'id': None,
+                'filename': 'Сильный личный бренд.pdf',
                 'path': files_dir + '/day_2_step_8.pdf'
+            },
+            'day_3_step_6_1': {
+                'id': None,
+                'filename': 'Твои шансы.pdf',
+                'path': files_dir + '/day_3_step_6_1.pdf'
+            },
+            'day_3_step_6_2': {
+                'id': None,
+                'filename': 'Топ 100 университетов.pdf',
+                'path': files_dir + '/day_3_step_6_2.pdf'
             },
         }
 

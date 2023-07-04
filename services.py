@@ -26,10 +26,10 @@ async def answer_photo(message: types.Message, file_key, caption, **kwargs):
         file['id'] = message.photo[0].file_id
 
 
-async def answer_file(message: types.Message, file_key, caption, **kwargs):
+async def answer_file(message: types.Message, file_key, caption = None, **kwargs):
     file = settings.files[file_key]
     if file['id'] is None:
-        input_file = InputFile(file['path'])
+        input_file = InputFile(file['path'], filename=file['filename'])
     else:
         input_file = file['id']
 

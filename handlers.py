@@ -259,6 +259,16 @@ async def yes_day_3_step_6(call: types.CallbackQuery, user: User):
                               "сокровища! И ты собираешь целую коллекцию!!\n"
                               "Мне даже страшно, от такого напора и скорости 🚀")
 
+    await answer_file(
+        message=call.message,
+        file_key='day_3_step_6_1'
+    )
+
+    await answer_file(
+        message=call.message,
+        file_key='day_3_step_6_2'
+    )
+
     user.is_agree_with_free_cons = True
     user.day_number = 3
     user.save()
@@ -274,6 +284,16 @@ async def no_day_3_step_6(call: types.CallbackQuery, user: User):
     await call.message.answer("За твои честные старания и неподдельный интерес я отправляю тебе еще 2 наших "
                               "сокровища! И ты собираешь целую коллекцию!!\n"
                               "Мне даже страшно, от такого напора и скорости 🚀")
+
+    await answer_file(
+        message=call.message,
+        file_key='day_3_step_6_1'
+    )
+
+    await answer_file(
+        message=call.message,
+        file_key='day_3_step_6_2'
+    )
 
     user.day_number = 3
     user.save()
