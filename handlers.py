@@ -26,10 +26,14 @@ async def start_cmd(message: types.Message):
                 "Тот, кто пройдёт все до конца и выполнит все домашние задания - получит наши подарки в виде "
                 "чек-листов и гайдов по поступлению, а также информацию о топ-100 университетов мира!"
     )
+    await asyncio.sleep(7)
     await answer_photo(
         message=message,
         file_key='day_1_step_3',
-        caption="Проходи, добро пожаловать!",
+        caption="Проходи, добро пожаловать!"
+    )
+    await message.answer(
+        "Кто-нибудь знает, что ты здесь?)",
         reply_markup=callbacks.ok_kb(day=1, step=3)
     )
 
@@ -98,7 +102,7 @@ async def enter_phone_number(message: types.Message):
 
 
 @settings.dp.callback_query_handler(callbacks.ok_data().filter(day='1', step='10'))
-async def ok_day_1_step_10(call: types.CallbackQuery):
+async def ok_day_1_step_10(call: types.CallbackQuery, user: User):
     await call.message.answer("Ты крутой!")
     await call.message.answer(
         "А вот и первое домашнее задание - его важно выполнить, пусть это будет твой первый небольшой шаг на пути "
@@ -107,10 +111,28 @@ async def ok_day_1_step_10(call: types.CallbackQuery):
         "После выполнения ты получишь чек-лист “8 шагов к поступлению за границу”:"
     )
     await call.message.answer(
-        "Тебе нужно заполнить маленькую анкету, действуй",
+        "Тебе нужно заполнить маленькую анкету, действуй\n",
         reply_markup=callbacks.link_kb('Анкета', 'https://forms.gle/rbdn2XE2qDgxCfLM9')
     )
-    await asyncio.sleep(60*15)
+    await call.message.answer(
+        "Поставь +, когда заполнишь анкету",
+        reply_markup=callbacks.ok_kb(day=1, step="10.1")
+    )
+    state = states.Form.waiting_form
+    await state.set()
+
+    user.state = str(states.Form.waiting_form)
+    user.save()
+
+
+@settings.dp.callback_query_handler(callbacks.ok_data().filter(day='1', step='10.1'), state=states.Form.waiting_form)
+@settings.dp.callback_query_handler(callbacks.ok_data().filter(day='1', step='10.1'))
+async def ok_day_1_step_10_1(call: types.CallbackQuery, user: User, state: FSMContext):
+    await state.finish()
+
+    user.state = None
+    user.save()
+
     await call.message.answer(
         "Ну как? выполнил? Точно-точно выполнил?",
         reply_markup=callbacks.ok_kb(day=1, step=11)

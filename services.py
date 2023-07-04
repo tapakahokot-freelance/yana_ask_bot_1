@@ -41,7 +41,7 @@ async def run_schedule():
     schedule_every().day.at("12:31").do(day_2_lesson_message)
     schedule_every().day.at("12:55").do(day_2_ask_message)
 
-    schedule_every(15).minutes.do(day_2_remember_about_inside)
+    schedule_every(15).minutes.do(remember)
 
     schedule_every().day.at("12:30").do(day_3_hi_message)
     schedule_every().day.at("12:31").do(day_3_hi_message_2)
@@ -91,12 +91,18 @@ async def day_2_ask_message():
             user.save()
 
 
-async def day_2_remember_about_inside():
+async def remember():
     for user in User.get_all():
         if user.day_number == 2 and user.state in (str(states.Form.waiting_inside), str(states.Form.waiting_three_things)):
             await settings.bot.send_message(
                 chat_id=user.chat_id,
                 text="Так-так, не вижу твоего инсайта :( неужели тебе не интересно, что ждет тебя в конце?",
+            )
+        if user.day_number == 1 and user.state == str(states.Form.waiting_form):
+            await settings.bot.send_message(
+                chat_id=user.chat_id,
+                text="Не забыл? Поставь +, когда заполнишь анкету",
+                reply_markup=callbacks.ok_kb(day=1, step="10.1")
             )
 
 
