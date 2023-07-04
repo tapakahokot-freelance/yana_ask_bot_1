@@ -24,6 +24,8 @@ logger.add(base_dir + '/logs/logs.log', format='{time} {level} {message}',
 logger.info('-' * 50)
 logger.info('Logging start')
 
+logger.info(f'{base_dir=}')
+
 
 @dataclass
 class Settings:
