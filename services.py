@@ -10,6 +10,8 @@ import callbacks
 import states
 from settings import settings
 from db import User
+from loguru import logger
+from datetime import datetime as dt, timezone as tz
 
 
 async def answer_photo(message: types.Message, file_key, caption, **kwargs):
@@ -37,24 +39,32 @@ async def answer_file(message: types.Message, file_key, caption, **kwargs):
 
 
 async def run_schedule():
-    schedule_every().day.at("12:30").do(day_2_hi_message)
-    schedule_every().day.at("12:31").do(day_2_lesson_message)
-    schedule_every().day.at("12:55").do(day_2_ask_message)
+    moscow_11 = str(11 - 3 + (dt.now().hour - dt.now(tz.utc).hour))
+
+    schedule_every().day.at(f"{moscow_11}:30").do(day_2_hi_message)
+    schedule_every().day.at(f"{moscow_11}:31").do(day_2_lesson_message)
+    schedule_every().day.at(f"{moscow_11}:55").do(day_2_ask_message)
 
     schedule_every(15).minutes.do(remember)
 
-    schedule_every().day.at("12:30").do(day_3_hi_message)
-    schedule_every().day.at("12:31").do(day_3_hi_message_2)
-    schedule_every().day.at("12:32").do(day_3_hi_message_3)
+    schedule_every().day.at(f"{moscow_11}:30").do(day_3_hi_message)
+    schedule_every().day.at(f"{moscow_11}:31").do(day_3_hi_message_2)
+    schedule_every().day.at(f"{moscow_11}:32").do(day_3_hi_message_3)
 
     while True:
         await schedule_run_pending()
         await asleep(15)
 
 
+def is_start_waiting_day_ago(user: User):
+    hours_passed = (dt.now().timestamp() - user.start_waiting_next_day_at) / 3600
+    return 6 < hours_passed
+
+
 async def day_2_hi_message():
     for user in User.get_all():
-        if user.day_number == 1 and user.is_waiting_next_day:
+        if user.day_number == 1 and user.is_waiting_next_day and is_start_waiting_day_ago(user):
+            logger.info(f'{user.chat_id=} day_2_hi_message')
             await settings.bot.send_message(
                 chat_id=user.chat_id,
                 text="Привет-привет, будущий студент зарубежного университета! Как твои дела? "
@@ -64,7 +74,8 @@ async def day_2_hi_message():
 
 async def day_2_lesson_message():
     for user in User.get_all():
-        if user.day_number == 1 and user.is_waiting_next_day:
+        if user.day_number == 1 and user.is_waiting_next_day and is_start_waiting_day_ago(user):
+            logger.info(f'{user.chat_id=} day_2_lesson_message')
             await settings.bot.send_message(
                 chat_id=user.chat_id,
                 text="А вот уже готовый второй урок на очереди."
@@ -80,7 +91,8 @@ async def day_2_lesson_message():
 
 async def day_2_ask_message():
     for user in User.get_all():
-        if user.day_number == 1 and user.is_waiting_next_day:
+        if user.day_number == 1 and user.is_waiting_next_day and is_start_waiting_day_ago(user):
+            logger.info(f'{user.chat_id=} day_2_ask_message')
             await settings.bot.send_message(
                 chat_id=user.chat_id,
                 text="Ну как? Удалось посмотреть мое видео? Точно смотрел внимательно?",
@@ -93,6 +105,9 @@ async def day_2_ask_message():
 
 async def remember():
     for user in User.get_all():
+        if user.day_number < 3 and user.state:
+            logger.info(f'{user.chat_id=} {user.day_number=} {user.state=} day_2_ask_message')
+
         if user.day_number == 2 and user.state in (str(states.Form.waiting_inside), str(states.Form.waiting_three_things)):
             await settings.bot.send_message(
                 chat_id=user.chat_id,
@@ -108,7 +123,8 @@ async def remember():
 
 async def day_3_hi_message():
     for user in User.get_all():
-        if user.day_number == 2 and user.state is None and user.is_waiting_next_day:
+        if user.day_number == 2 and user.state is None and user.is_waiting_next_day and is_start_waiting_day_ago(user):
+            logger.info(f'{user.chat_id=} day_3_hi_message')
             await settings.bot.send_message(
                 chat_id=user.chat_id,
                 text="Ну что, я посмотрела твое домашнее задание! Ты действительно усвоил материал, но, конечно, "
@@ -125,7 +141,8 @@ async def day_3_hi_message():
 
 async def day_3_hi_message_2():
     for user in User.get_all():
-        if user.day_number == 2 and user.state is None and user.is_waiting_next_day:
+        if user.day_number == 2 and user.state is None and user.is_waiting_next_day and is_start_waiting_day_ago(user):
+            logger.info(f'{user.chat_id=} day_3_hi_message_2')
             await settings.bot.send_message(
                 chat_id=user.chat_id,
                 text="Во-вторых, сделай упор на свой личный бренд. Тут хорошо бы иметь не только академический "
@@ -136,7 +153,8 @@ async def day_3_hi_message_2():
 
 async def day_3_hi_message_3():
     for user in User.get_all():
-        if user.day_number == 2 and user.state is None and user.is_waiting_next_day:
+        if user.day_number == 2 and user.state is None and user.is_waiting_next_day and is_start_waiting_day_ago(user):
+            logger.info(f'{user.chat_id=} day_3_hi_message_3')
             await settings.bot.send_message(
                 chat_id=user.chat_id,
                 text="Если ты заинтересовался и хочешь действительно углубится в этот процесс и осуществить свою "

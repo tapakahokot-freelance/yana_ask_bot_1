@@ -36,7 +36,13 @@ class User:
     chat_id: int
     day_number: int = 1
     is_waiting_next_day: bool = False
+    start_waiting_next_day_at: int = 0
     state: str = None
+    phone_number: str = None
+    inside: str = None
+    lesson_benefits: str = None
+    is_agree_with_free_cons: bool | None = None
+
 
     @staticmethod
     def get_or_create(chat_id: int, **kwargs):

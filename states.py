@@ -5,3 +5,4 @@ class Form(StatesGroup):
     waiting_inside = State()
     waiting_three_things = State()
     waiting_form = State()
+    waiting_phone = State()

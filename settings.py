@@ -1,5 +1,7 @@
+import pathlib
+
 from aiogram import Bot, Dispatcher
-from aiogram.contrib.fsm_storage.memory import MemoryStorage
+from aiogram.contrib.fsm_storage.files import JSONStorage
 from dotenv import load_dotenv
 from loguru import logger
 
@@ -8,12 +10,15 @@ from os import getenv, mkdir, path
 
 load_dotenv()
 
+base_dir = path.dirname(path.abspath(__file__))
+files_dir = base_dir + '/files'
+
 try:
-    mkdir("Logs")
+    mkdir("logs")
 except FileExistsError:
     pass
 
-logger.add('Logs/logs.log', format='{time} {level} {message}',
+logger.add(base_dir + '/logs/logs.log', format='{time} {level} {message}',
            level=getenv('LOGGING_LEVEL', 'INFO'), rotation='1 MB', compression='zip')
 
 logger.info('-' * 50)
@@ -37,10 +42,7 @@ class Settings:
         self.admins = getenv('ADMINS').split(',')
 
         self.bot = Bot(token=self.token)
-        self.dp = Dispatcher(self.bot, storage=MemoryStorage())
-
-        base_dir = path.dirname(path.abspath(__file__))
-        files_dir = base_dir + '/files'
+        self.dp = Dispatcher(self.bot, storage=JSONStorage(pathlib.Path(base_dir + '/storage.json')))
 
         self.files = {
             'day_1_step_2': {

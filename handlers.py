@@ -8,7 +8,8 @@ from settings import settings
 from db import User
 
 from services import answer_photo, answer_file
-import callbacks, states
+import callbacks, states, filters, services
+from datetime import datetime as dt
 
 
 @settings.dp.message_handler(commands=["start"])
@@ -82,9 +83,20 @@ async def ok_day_1_step_5(call: types.CallbackQuery):
     await call.message.answer("У тебя мало времени, действуй быстро.")
     await call.message.answer("Для начала нужно написать свой номер телефона  - проверка на секретность!")
 
+    state = states.Form.waiting_phone
+    await state.set()
 
-@settings.dp.message_handler(regexp=re.compile('^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$'))
-async def enter_phone_number(message: types.Message):
+
+@settings.dp.message_handler(
+    state=states.Form.waiting_phone,
+    regexp=re.compile('^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$')
+)
+async def enter_phone_number(message: types.Message, user: User, state: FSMContext):
+    await state.finish()
+
+    user.phone_number = message.text
+    user.save()
+
     await message.answer(
         "Проверка пройдена, вот это крутой номер! Поэтому доступ к урокам открыт. "
         "Всего за 2 урока ты поймёшь пошаговый план, как поступить в вуз за границей и "
@@ -99,6 +111,14 @@ async def enter_phone_number(message: types.Message):
         "Дальше будет только интереснее 🚀 и поставь галочку, когда посмотришь его.",
         reply_markup=callbacks.ok_kb(day=1, step=10)
     )
+
+
+@settings.dp.message_handler(
+    state=states.Form.waiting_phone,
+    content_types=['any']
+)
+async def wrong_enter_phone_number(message: types.Message):
+    await message.answer("Такими темпами ты не пройдешь проверку на секретность((\nЛучше напиши свой номер телефона :)")
 
 
 @settings.dp.callback_query_handler(callbacks.ok_data().filter(day='1', step='10'))
@@ -147,8 +167,10 @@ async def ok_day_1_step_11(call: types.CallbackQuery, user: User):
         caption="Ты молодец, что сделал шаг вперед - пока ничего сложного, правда же? За это я как и обещала, присылаю "
         "тебе гайд и на сегодня мы отдыхаем, до новых встреч завтра!",
     )
-    user.is_waiting_next_day = True
-    user.save()
+    if user.day_number == 1:
+        user.is_waiting_next_day = True
+        user.start_waiting_next_day_at = dt.now().timestamp()
+        user.save()
 
 
 @settings.dp.callback_query_handler(callbacks.ok_data().filter(day='2', step='4'))
@@ -168,6 +190,7 @@ async def enter_inside(message: types.Message, user: User, state: FSMContext):
     await state.finish()
 
     user.state = None
+    user.inside = message.text
     user.save()
 
     await message.answer(
@@ -196,6 +219,7 @@ async def enter_three_things(message: types.Message, user: User, state: FSMConte
     await state.finish()
 
     user.state = None
+    user.lesson_benefits = message.text
     user.save()
 
     await message.answer(
@@ -217,8 +241,11 @@ async def enter_three_things(message: types.Message, user: User, state: FSMConte
                          "такое же заряженное окружение: https://t.me/+bAXZl02t3aAwODA6   💗 а все мы знаем, как "
                          "важна поддержка на этом пути, так что жду тебя, мой дорогой шпион! Ну и жду тебя завтра, "
                          "в этом же месте, в это же время!")
-    user.is_waiting_next_day = True
-    user.save()
+
+    if user.day_number == 2:
+        user.is_waiting_next_day = True
+        user.start_waiting_next_day_at = dt.now().timestamp()
+        user.save()
 
 
 @settings.dp.callback_query_handler(callbacks.yes_no_data().filter(action='yes', day='3', step='6'))
@@ -232,6 +259,10 @@ async def yes_day_3_step_6(call: types.CallbackQuery, user: User):
                               "сокровища! И ты собираешь целую коллекцию!!\n"
                               "Мне даже страшно, от такого напора и скорости 🚀")
 
+    user.is_agree_with_free_cons = True
+    user.day_number = 3
+    user.save()
+
 
 @settings.dp.callback_query_handler(callbacks.yes_no_data().filter(action='no', day='3', step='6'))
 async def no_day_3_step_6(call: types.CallbackQuery, user: User):
@@ -243,3 +274,23 @@ async def no_day_3_step_6(call: types.CallbackQuery, user: User):
     await call.message.answer("За твои честные старания и неподдельный интерес я отправляю тебе еще 2 наших "
                               "сокровища! И ты собираешь целую коллекцию!!\n"
                               "Мне даже страшно, от такого напора и скорости 🚀")
+
+    user.day_number = 3
+    user.save()
+
+
+@settings.dp.message_handler(filters.IsAdminFilter(), commands=['run_schedule'])
+async def run_schedule(message: types.Message):
+    await message.answer('Начинаю запуск тасков')
+
+    await services.day_2_hi_message()
+    await services.day_2_lesson_message()
+    await services.day_2_ask_message()
+
+    await services.remember()
+
+    await services.day_3_hi_message()
+    await services.day_3_hi_message_2()
+    await services.day_3_hi_message_3()
+
+    await message.answer('Такси выполнены')

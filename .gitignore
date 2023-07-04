@@ -1,6 +1,7 @@
 .env
 Logs/
 users.json
+storage.json
 venv/
 .idea/
 __pycache__/
