@@ -37,15 +37,15 @@ async def answer_file(message: types.Message, file_key, caption, **kwargs):
 
 
 async def run_schedule():
-    schedule_every().day.at("8:30").do(day_2_hi_message)
-    schedule_every().day.at("8:31").do(day_2_lesson_message)
-    schedule_every().day.at("8:55").do(day_2_ask_message)
+    schedule_every().day.at("11:30", "Europe/Moscow").do(day_2_hi_message)
+    schedule_every().day.at("11:31", "Europe/Moscow").do(day_2_lesson_message)
+    schedule_every().day.at("11:55", "Europe/Moscow").do(day_2_ask_message)
 
     schedule_every(15).minutes.do(day_2_remember_about_inside)
 
-    schedule_every().day.at("8:30").do(day_3_hi_message)
-    schedule_every().day.at("8:31").do(day_3_hi_message_2)
-    schedule_every().day.at("8:32").do(day_3_hi_message_3)
+    schedule_every().day.at("11:30", "Europe/Moscow").do(day_3_hi_message)
+    schedule_every().day.at("11:31", "Europe/Moscow").do(day_3_hi_message_2)
+    schedule_every().day.at("11:32", "Europe/Moscow").do(day_3_hi_message_3)
 
     while True:
         await schedule_run_pending()
