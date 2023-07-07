@@ -314,3 +314,15 @@ async def run_schedule(message: types.Message):
     await services.day_3_hi_message_3()
 
     await message.answer('Такси выполнены')
+
+
+@settings.dp.message_handler(filters.IsAdminFilter(), commands=['i'])
+async def run_schedule(message: types.Message):
+    all_users_count, agreed_users_count = User.generate_excel()
+
+    await answer_file(
+        message=message,
+        file_key='users_info',
+        caption=f'Всего пользователей: {all_users_count}\n'
+                f'Пользователи согласные на консультацию: {agreed_users_count}'
+    )

@@ -89,6 +89,11 @@ class Settings:
                 'filename': 'Топ 100 университетов.pdf',
                 'path': files_dir + '/day_3_step_6_2.pdf'
             },
+            'users_info': {
+                'id': None,
+                'filename': 'Информация о пользователях.xlsx',
+                'path': files_dir + '/users_info.xlsx'
+            },
         }
 
 

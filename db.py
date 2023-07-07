@@ -1,5 +1,6 @@
 import json
 import os
+import pandas as pd
 from dataclasses import dataclass
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -63,3 +64,25 @@ class User:
     def save(self):
         db.users[str(self.chat_id)] = self.__dict__
         db.save_users()
+
+    @staticmethod
+    def generate_excel():
+        df = pd.read_json(db.users_file, orient='index').reset_index(drop=True)
+        df = df.drop('state', axis=1).drop('is_waiting_next_day', axis=1).\
+            drop('start_waiting_next_day_at', axis=1).drop('day_number', axis=1)
+
+        all_users_count = len(df)
+        agreed_users_count = len(df[df['is_agree_with_free_cons']])
+
+        df.rename(
+            columns={
+                'phone_number': 'Номер телефона',
+                'inside': 'Инсайт',
+                'lesson_benefits': 'Польза от уроков',
+                'is_agree_with_free_cons': 'Согласен на консультацию'
+            },
+            inplace=True
+        )
+        df.to_excel(base_dir + '/files/users_info.xlsx')
+
+        return all_users_count, agreed_users_count

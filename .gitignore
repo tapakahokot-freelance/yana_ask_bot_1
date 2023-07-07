@@ -5,3 +5,4 @@ storage.json
 venv/
 .idea/
 __pycache__/
+/files/users_info.xlsx
