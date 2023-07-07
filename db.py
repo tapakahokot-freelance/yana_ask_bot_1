@@ -72,7 +72,7 @@ class User:
             drop('start_waiting_next_day_at', axis=1).drop('day_number', axis=1)
 
         all_users_count = len(df)
-        agreed_users_count = len(df[df['is_agree_with_free_cons']])
+        agreed_users_count = len(df[df['is_agree_with_free_cons'] == True])
 
         df.rename(
             columns={
