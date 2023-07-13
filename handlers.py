@@ -81,7 +81,7 @@ async def ok_day_1_step_5(call: types.CallbackQuery):
     )
     await call.message.answer("Чтобы получить доступ к сокровищам, тебе нужно пройти проверку на секретность.")
     await call.message.answer("У тебя мало времени, действуй быстро.")
-    await call.message.answer("Для начала нужно написать свой номер телефона  - проверка на секретность!")
+    await call.message.answer("Для начала нужно написать свой номер телефона (в формате 89999999999)  - проверка на секретность!")
 
     state = states.Form.waiting_phone
     await state.set()
@@ -89,7 +89,7 @@ async def ok_day_1_step_5(call: types.CallbackQuery):
 
 @settings.dp.message_handler(
     state=states.Form.waiting_phone,
-    regexp=re.compile('^(8|\+7|7)(\D*(\d\D*){10})$')
+    regexp=re.compile('^\D*(\d\D*){11}$')
 )
 async def enter_phone_number(message: types.Message, user: User, state: FSMContext):
     await state.finish()
@@ -118,7 +118,7 @@ async def enter_phone_number(message: types.Message, user: User, state: FSMConte
     content_types=['any']
 )
 async def wrong_enter_phone_number(message: types.Message):
-    await message.answer("Такими темпами ты не пройдешь проверку на секретность((\nЛучше напиши свой номер телефона :)")
+    await message.answer("Такими темпами ты не пройдешь проверку на секретность((\nЛучше напиши свой номер телефона (в формате 89999999999) :)")
 
 
 @settings.dp.callback_query_handler(callbacks.ok_data().filter(day='1', step='10'))
