@@ -1,6 +1,7 @@
 import json
 import os
 import pandas as pd
+import numpy as np
 from dataclasses import dataclass
 
 base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -45,7 +46,7 @@ class User:
     inside: str = None
     lesson_benefits: str = None
     is_agree_with_free_cons: bool | None = None
-
+    username: str = None
 
     @staticmethod
     def get_or_create(chat_id: int, **kwargs):
@@ -74,12 +75,19 @@ class User:
         all_users_count = len(df)
         agreed_users_count = len(df[df['is_agree_with_free_cons'] == True])
 
+        def make_hyperlink(row):
+            if 'username' in row and str(row['username']) != 'nan':
+                return f'https://telegram.me/{row["username"]}'
+            return f'tg://user?id={row["chat_id"]}'
+
+        df['link'] = df.apply(make_hyperlink, axis=1)
         df.rename(
             columns={
                 'phone_number': 'Номер телефона',
                 'inside': 'Инсайт',
                 'lesson_benefits': 'Польза от уроков',
-                'is_agree_with_free_cons': 'Согласен на консультацию'
+                'is_agree_with_free_cons': 'Согласен на консультацию',
+                'link': 'Ссылка'
             },
             inplace=True
         )

@@ -89,7 +89,7 @@ async def ok_day_1_step_5(call: types.CallbackQuery):
 
 @settings.dp.message_handler(
     state=states.Form.waiting_phone,
-    regexp=re.compile('^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$')
+    regexp=re.compile('^(8|\+7|7)(\D*(\d\D*){10})$')
 )
 async def enter_phone_number(message: types.Message, user: User, state: FSMContext):
     await state.finish()
