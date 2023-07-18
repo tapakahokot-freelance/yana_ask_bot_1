@@ -167,7 +167,8 @@ async def ok_day_1_step_11(call: types.CallbackQuery, user: User):
         caption="Ты молодец, что сделал шаг вперед - пока ничего сложного, правда же? За это я как и обещала, присылаю "
         "тебе гайд и на сегодня мы отдыхаем, до новых встреч завтра!",
     )
-    if user.day_number == 1:
+    if user.day_number == 1 or str(call.message.chat.id) in settings.admins:
+        user.day_number = 1
         user.is_waiting_next_day = True
         user.start_waiting_next_day_at = dt.now().timestamp()
         user.save()
@@ -242,7 +243,8 @@ async def enter_three_things(message: types.Message, user: User, state: FSMConte
                          "важна поддержка на этом пути, так что жду тебя, мой дорогой шпион! Ну и жду тебя завтра, "
                          "в этом же месте, в это же время!")
 
-    if user.day_number == 2:
+    if user.day_number == 2 or str(message.chat.id) in settings.admins:
+        user.day_number = 2
         user.is_waiting_next_day = True
         user.start_waiting_next_day_at = dt.now().timestamp()
         user.save()
@@ -326,3 +328,18 @@ async def run_schedule(message: types.Message):
         caption=f'Всего пользователей: {all_users_count}\n'
                 f'Пользователи согласные на консультацию: {agreed_users_count}'
     )
+
+
+@settings.dp.message_handler(filters.IsAdminFilter(), commands=['next_step'])
+async def run_schedule(message: types.Message):
+    users = User.filter(chat_id=message.chat.id)
+
+    await services.day_2_hi_message(users, False)
+    await services.day_2_lesson_message(users, False)
+    await services.day_2_ask_message(users, False)
+
+    await services.remember(users)
+
+    await services.day_3_hi_message(users, False)
+    await services.day_3_hi_message_2(users, False)
+    await services.day_3_hi_message_3(users, False)

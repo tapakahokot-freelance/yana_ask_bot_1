@@ -62,6 +62,15 @@ class User:
     def get_all():
         return [User(**u) for u in db.users.values()]
 
+    @staticmethod
+    def filter(**kwargs):
+        def filter_func(dic):
+            dic_to_compare = {k: v for k, v in dic.items() if k in kwargs}
+            return dic_to_compare == kwargs
+
+        users = list(filter(filter_func, db.users.values()))
+        return [User(**u) for u in users]
+
     def save(self):
         db.users[str(self.chat_id)] = self.__dict__
         db.save_users()

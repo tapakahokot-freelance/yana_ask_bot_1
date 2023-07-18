@@ -61,9 +61,20 @@ def is_start_waiting_day_ago(user: User):
     return 6 < hours_passed
 
 
-async def day_2_hi_message():
-    for user in User.get_all():
-        if user.day_number == 1 and user.is_waiting_next_day and is_start_waiting_day_ago(user):
+def users_list(func):
+    def decorator(users=None, is_wait_day: bool = True):
+        if users:
+            users = users[:]
+        else:
+            users = User.get_all()
+        return func(users, is_wait_day)
+    return decorator
+
+
+@users_list
+async def day_2_hi_message(users, is_wait_day: bool = True):
+    for user in users:
+        if user.day_number == 1 and user.is_waiting_next_day and (is_start_waiting_day_ago(user) or not is_wait_day):
             logger.info(f'{user.chat_id=} day_2_hi_message')
             await settings.bot.send_message(
                 chat_id=user.chat_id,
@@ -72,9 +83,10 @@ async def day_2_hi_message():
             )
 
 
-async def day_2_lesson_message():
-    for user in User.get_all():
-        if user.day_number == 1 and user.is_waiting_next_day and is_start_waiting_day_ago(user):
+@users_list
+async def day_2_lesson_message(users, is_wait_day: bool = True):
+    for user in users:
+        if user.day_number == 1 and user.is_waiting_next_day and (is_start_waiting_day_ago(user) or not is_wait_day):
             logger.info(f'{user.chat_id=} day_2_lesson_message')
             await settings.bot.send_message(
                 chat_id=user.chat_id,
@@ -89,9 +101,10 @@ async def day_2_lesson_message():
             )
 
 
-async def day_2_ask_message():
-    for user in User.get_all():
-        if user.day_number == 1 and user.is_waiting_next_day and is_start_waiting_day_ago(user):
+@users_list
+async def day_2_ask_message(users, is_wait_day: bool = True):
+    for user in users:
+        if user.day_number == 1 and user.is_waiting_next_day and (is_start_waiting_day_ago(user) or not is_wait_day):
             logger.info(f'{user.chat_id=} day_2_ask_message')
             await settings.bot.send_message(
                 chat_id=user.chat_id,
@@ -103,8 +116,9 @@ async def day_2_ask_message():
             user.save()
 
 
-async def remember():
-    for user in User.get_all():
+@users_list
+async def remember(users):
+    for user in users:
         if user.day_number < 3 and user.state:
             logger.info(f'{user.chat_id=} {user.day_number=} {user.state=} day_2_ask_message')
 
@@ -121,9 +135,10 @@ async def remember():
             )
 
 
-async def day_3_hi_message():
-    for user in User.get_all():
-        if user.day_number == 2 and user.state is None and user.is_waiting_next_day and is_start_waiting_day_ago(user):
+@users_list
+async def day_3_hi_message(users, is_wait_day: bool = True):
+    for user in users:
+        if user.day_number == 2 and user.state is None and user.is_waiting_next_day and (is_start_waiting_day_ago(user) or not is_wait_day):
             logger.info(f'{user.chat_id=} day_3_hi_message')
             await settings.bot.send_message(
                 chat_id=user.chat_id,
@@ -139,9 +154,10 @@ async def day_3_hi_message():
             )
 
 
-async def day_3_hi_message_2():
-    for user in User.get_all():
-        if user.day_number == 2 and user.state is None and user.is_waiting_next_day and is_start_waiting_day_ago(user):
+@users_list
+async def day_3_hi_message_2(users, is_wait_day: bool = True):
+    for user in users:
+        if user.day_number == 2 and user.state is None and user.is_waiting_next_day and (is_start_waiting_day_ago(user) or not is_wait_day):
             logger.info(f'{user.chat_id=} day_3_hi_message_2')
             await settings.bot.send_message(
                 chat_id=user.chat_id,
@@ -151,9 +167,10 @@ async def day_3_hi_message_2():
             )
 
 
-async def day_3_hi_message_3():
-    for user in User.get_all():
-        if user.day_number == 2 and user.state is None and user.is_waiting_next_day and is_start_waiting_day_ago(user):
+@users_list
+async def day_3_hi_message_3(users, is_wait_day: bool = True):
+    for user in users:
+        if user.day_number == 2 and user.state is None and user.is_waiting_next_day and (is_start_waiting_day_ago(user) or not is_wait_day):
             logger.info(f'{user.chat_id=} day_3_hi_message_3')
             await settings.bot.send_message(
                 chat_id=user.chat_id,
